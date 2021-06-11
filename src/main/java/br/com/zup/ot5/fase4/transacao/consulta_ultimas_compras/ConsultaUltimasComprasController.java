@@ -19,7 +19,7 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("cartoes/{idCartao}/ultimas-compras")
-public class UltimasComprasController {
+public class ConsultaUltimasComprasController {
 
 
     @PersistenceContext
@@ -33,11 +33,13 @@ public class UltimasComprasController {
         if(cartaoBuscadoPeloId.isEmpty())
             return ResponseEntity.notFound().build();
 
-
         List<Transacao> ultimasDezTransacoes = manager
                                                .createQuery("SELECT t " +
                                                                    "FROM Transacao t " +
+                                                                   "JOIN FETCH t.cartao c " +
+                                                                   "WHERE c.id = :idCartao " +
                                                                    "ORDER BY t.efetivadaEm DESC ", Transacao.class)
+                                               .setParameter("idCartao", idCartao)
                                                .setMaxResults(10)
                                                .getResultList();
 
